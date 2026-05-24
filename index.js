@@ -30,7 +30,7 @@ client.on("guildMemberAdd", (member) => {
     .setColor("#480FB4")
     .setTitle(`🎉 Welcome to ${member.guild.name}!`)
     .setDescription(
-`🌟Hello <@${member.id}> 👋
+`🌟 Hello <@${member.id}> 👋
 
 Thank you for joining Zeraya McLegacy 💜
 Your adventure with us starts today ✨
@@ -47,7 +47,7 @@ Once again, welcome — and have an amazing time with us 💫`
     .setFooter({ text: `Member #${member.guild.memberCount}` })
     .setTimestamp();
 
-channel.send({ embeds: [embed] });
+  channel.send({ embeds: [embed] });
 });
 
 // =====================
@@ -69,19 +69,7 @@ You'll always be welcome back anytime.`
     .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
     .setTimestamp();
 
-channel.send({ embeds: [embed] });const embed = new EmbedBuilder()
-  .setColor("#81058D")
-  .setTitle(`🌙 Farewell from ${member.guild.name}`)
-  .setDescription(
-    `<@${member.id}> has left the server.
-
-Thanks for being part of our journey 💜
-You'll always be welcome back anytime.`
-  )
-  .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-  .setTimestamp();
-
-channel.send({ embeds: [embed] });
+  channel.send({ embeds: [embed] });
 });
 
 // =====================
@@ -102,8 +90,9 @@ client.on("guildBanAdd", (ban) => {
 
   channel.send({ embeds: [embed] });
 });
+
 // =====================
-// EMBED COMMAND (UPGRADED)
+// EMBED COMMAND
 // =====================
 client.on("messageCreate", async (message) => {
   if (!message.guild || message.author.bot) return;
@@ -114,7 +103,7 @@ client.on("messageCreate", async (message) => {
 
   let content = message.content.slice(7).trim();
 
-  // ✅ NEW: Detect mentioned user
+  // Detect mentioned user
   const mentionedUser = message.mentions.users.first() || message.author;
 
   const args = content.split("|").map(a => a.trim());
@@ -137,11 +126,14 @@ client.on("messageCreate", async (message) => {
     description = args[1];
   }
 
-  // ✅ NEW: Replace custom variables
+  // Replace variables
   if (description) {
     description = description
       .replace(/{user\.mention}/g, `<@${mentionedUser.id}>`)
-      .replace(/{user\.avatar}/g, mentionedUser.displayAvatarURL({ dynamic: true }));
+      .replace(
+        /{user\.avatar}/g,
+        mentionedUser.displayAvatarURL({ dynamic: true })
+      );
   }
 
   // OPTIONS
@@ -167,10 +159,14 @@ client.on("messageCreate", async (message) => {
     .setTitle(title)
     .setDescription(description);
 
+  // ICON
   if (showIcon) {
-    embed.setThumbnail(message.author.displayAvatarURL({ dynamic: true }));
+    embed.setThumbnail(
+      message.author.displayAvatarURL({ dynamic: true })
+    );
   }
 
+  // AUTHOR
   if (authorName) {
     embed.setAuthor({
       name: authorName,
@@ -178,17 +174,21 @@ client.on("messageCreate", async (message) => {
     });
   }
 
-  // ✅ NEW: Smart thumbnail handling
+  // THUMBNAIL
   if (thumbnail) {
     if (thumbnail === "{user.avatar}") {
-      embed.setThumbnail(mentionedUser.displayAvatarURL({ dynamic: true }));
+      embed.setThumbnail(
+        mentionedUser.displayAvatarURL({ dynamic: true })
+      );
     } else {
       embed.setThumbnail(thumbnail);
     }
   }
 
+  // IMAGE
   if (image) embed.setImage(image);
 
+  // FOOTER
   if (footerText) {
     embed.setFooter({
       text: footerText,
