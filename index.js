@@ -212,4 +212,4 @@ client.on("messageCreate", async (message) => {
 // =====================
 // LOGIN
 // =====================
-client.login(process.env.Zeraya_Bot);
+client.login(process.env.Zeraya);
