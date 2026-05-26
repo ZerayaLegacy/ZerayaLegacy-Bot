@@ -1,7 +1,7 @@
 // =====================
-// EMBED BOT (By ZenTheCosmic - UPGRADE)
+// 𝙴𝙼𝙱𝙴𝙳 𝙱𝙾𝚃 (𝙱𝚢 𝚉𝚎𝚗𝚃𝚑𝚎𝙲𝚘𝚜𝚖𝚒𝚌 - 𝚄𝙿𝙶𝚁𝙰𝙳𝙴)
 // =====================
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder, AuditLogEvent } = require("discord.js");
 
 const client = new Client({
   intents: [
@@ -13,21 +13,21 @@ const client = new Client({
 });
 
 // =====================
-// READY
+// 𝚁𝙴𝙰𝙳𝚈
 // =====================
 client.once("ready", () => {
   console.log(`[READY] Logged in as ${client.user.tag}`);
 });
 
 // =====================
-// WELCOME
+// 𝚆𝙴𝙻𝙲𝙾𝙼𝙴
 // =====================
 client.on("guildMemberAdd", (member) => {
   const channel = member.guild.channels.cache.get("1434403930653069430");
   if (!channel) return;
 
   const embed = new EmbedBuilder()
-    .setColor("#480FB4")
+    .setColor("#ff00e9")
     .setTitle(`🎉 Welcome to ${member.guild.name}!`)
     .setDescription(
 `🌟 Hello <@${member.id}> 👋
@@ -51,7 +51,7 @@ Once again, welcome — and have an amazing time with us 💫`
 });
 
 // =====================
-// LEAVE
+// 𝙻𝙴𝙰𝚅𝙴
 // =====================
 client.on("guildMemberRemove", (member) => {
   const channel = member.guild.channels.cache.get("1489566955290755203");
@@ -73,26 +73,51 @@ You'll always be welcome back anytime.`
 });
 
 // =====================
-// BAN
+// 𝙱𝙰𝙽
 // =====================
-client.on("guildBanAdd", (ban) => {
+client.on("guildBanAdd", async (ban) => {
   const channel = ban.guild.channels.cache.get("1489567134521753761");
   if (!channel) return;
 
-  const embed = new EmbedBuilder()
-    .setColor("#FF0000")
-    .setTitle("🚫 User Banned")
-    .setDescription(
-`<@${ban.user.id}> has been permanently removed from **${ban.guild.name}**.`
-    )
-    .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
-    .setTimestamp();
+  try {
+    const fetchedLogs = await ban.guild.fetchAuditLogs({
+      limit: 1,
+      type: AuditLogEvent.MemberBanAdd
+    });
 
-  channel.send({ embeds: [embed] });
+    const banLog = fetchedLogs.entries.first();
+
+    let moderator = "Unknown";
+    let reason = "No reason provided";
+
+    if (banLog) {
+      moderator = `<@${banLog.executor.id}>`;
+      reason = banLog.reason || "No reason provided";
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor("#FF00e9")
+      .setTitle("🚫 User Banned")
+      .setDescription(
+`<@${ban.user.id}> has been permanently removed from **${ban.guild.name}**.
+
+👮 Moderator: ${moderator}
+📝 Reason: ${reason}`
+      )
+      .setThumbnail(
+        ban.user.displayAvatarURL({ dynamic: true })
+      )
+      .setTimestamp();
+
+    channel.send({ embeds: [embed] });
+
+  } catch (err) {
+    console.error("[BAN LOG ERROR]", err);
+  }
 });
 
 // =====================
-// EMBED COMMAND
+// 𝙴𝙼𝙱𝙴𝙳 𝙲𝙾𝙼𝙼𝙰𝙽𝙳
 // =====================
 client.on("messageCreate", async (message) => {
   if (!message.guild || message.author.bot) return;
@@ -103,7 +128,7 @@ client.on("messageCreate", async (message) => {
 
   let content = message.content.slice(7).trim();
 
-  // Detect mentioned user
+  // 𝙳𝚎𝚝𝚎𝚌𝚝 𝚖𝚎𝚗𝚝𝚒𝚘𝚗𝚎𝚍 𝚞𝚜𝚎𝚛
   const mentionedUser = message.mentions.users.first() || message.author;
 
   const args = content.split("|").map(a => a.trim());
@@ -116,7 +141,7 @@ client.on("messageCreate", async (message) => {
   let thumbnail, image;
   let footerText, footerIcon;
 
-  // BASE
+  // 𝙱𝙰𝚂𝙴
   if (args[0]?.startsWith("#")) {
     color = args[0];
     title = args[1];
@@ -126,7 +151,7 @@ client.on("messageCreate", async (message) => {
     description = args[1];
   }
 
-  // Replace variables
+  // 𝚁𝚎𝚙𝚕𝚊𝚌𝚎 𝚟𝚊𝚛𝚒𝚊𝚋𝚕𝚎𝚜
   if (description) {
     description = description
       .replace(/{user\.mention}/g, `<@${mentionedUser.id}>`)
@@ -136,7 +161,7 @@ client.on("messageCreate", async (message) => {
       );
   }
 
-  // OPTIONS
+  // 𝙾𝙿𝚃𝙸𝙾𝙽𝚂
   args.forEach(arg => {
     const lower = arg.toLowerCase();
 
@@ -159,14 +184,14 @@ client.on("messageCreate", async (message) => {
     .setTitle(title)
     .setDescription(description);
 
-  // ICON
+  // 𝙸𝙲𝙾𝙽
   if (showIcon) {
     embed.setThumbnail(
       message.author.displayAvatarURL({ dynamic: true })
     );
   }
 
-  // AUTHOR
+  // 𝙰𝚄𝚃𝙷𝙾𝚁
   if (authorName) {
     embed.setAuthor({
       name: authorName,
@@ -174,7 +199,7 @@ client.on("messageCreate", async (message) => {
     });
   }
 
-  // THUMBNAIL
+  // 𝚃𝙷𝚄𝙼𝙱𝙽𝙰𝙸𝙻
   if (thumbnail) {
     if (thumbnail === "{user.avatar}") {
       embed.setThumbnail(
@@ -185,10 +210,10 @@ client.on("messageCreate", async (message) => {
     }
   }
 
-  // IMAGE
+  // 𝙸𝙼𝙰𝙶𝙴
   if (image) embed.setImage(image);
 
-  // FOOTER
+  // 𝙵𝙾𝙾𝚃𝙴𝚁
   if (footerText) {
     embed.setFooter({
       text: footerText,
@@ -210,6 +235,6 @@ client.on("messageCreate", async (message) => {
 });
 
 // =====================
-// LOGIN
+// 𝙻𝙾𝙶𝙸𝙽
 // =====================
 client.login(process.env.Zeraya);
